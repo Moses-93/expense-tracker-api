@@ -174,3 +174,4 @@ cython_debug/
 .pypirc
 
 database.db
+.vscode/settings.json
