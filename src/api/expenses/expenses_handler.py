@@ -1,5 +1,6 @@
 import logging
-from fastapi import Query, Depends, Response
+from fastapi import Query, Depends
+from fastapi.responses import StreamingResponse
 
 from src.services.user_service import get_current_user
 from src.db.models import User
@@ -37,7 +38,7 @@ class ExpenseHandler:
         )
         headers = {"Content-Disposition": "attachment; filename=expenses_report.xlsx"}
 
-        return Response(
+        return StreamingResponse(
             content=expenses_report,
             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             headers=headers,
