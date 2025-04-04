@@ -7,7 +7,7 @@ class ExpenseRouter:
     def __init__(self, expenses_handlers: ExpenseHandler):
         self.router = APIRouter(prefix="/api/expenses", tags=["expenses"])
         self.register_handlers(expenses_handlers)
-    
+
     def register_handlers(self, expenses_handlers: ExpenseHandler):
         self.router.add_api_route(
             path="/",

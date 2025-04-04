@@ -1,11 +1,9 @@
-from fastapi import  HTTPException, Request, status
+from fastapi import HTTPException, Request, status
 from src.db.repository import CRUDRepository
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from src.db.models import User
 from typing import Optional
-
-
 
 
 class UserService:
@@ -18,7 +16,7 @@ class UserService:
         return CRUDRepository.read(
             select(User).filter_by(chat_id=chat_id), session, single=True
         )
-    
+
     @staticmethod
     def create_user(chat_id: int, session: Session) -> User:
         """
