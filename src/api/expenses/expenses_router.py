@@ -18,7 +18,7 @@ class ExpenseRouter:
             name="Get Expenses",
         )
         self.router.add_api_route(
-            path="/report",
+            path="/report/excel",
             endpoint=expenses_handlers.get_expenses_excel_report,
             methods=["GET"],
             name="Get Expenses Report",
