@@ -50,7 +50,7 @@ class ExpenseHandler:
         user: User = Depends(get_current_user),
         session=Depends(get_db),
     ):
-        created_expensive = self.expenses_manager.create_expense(
+        return self.expenses_manager.create_expense(
             user_id=user.id, expense=expense, session=session
         )
 
