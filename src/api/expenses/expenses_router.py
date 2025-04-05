@@ -34,7 +34,7 @@ class ExpenseRouter:
             path="/{expense_id}",
             endpoint=expenses_handlers.update_expense,
             status_code=status.HTTP_200_OK,
-            methods=["PATH"],
+            methods=["PATCH"],
             name="Update Expense",
         )
         self.router.add_api_route(
