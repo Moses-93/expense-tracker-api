@@ -10,12 +10,12 @@ class ExpenseRouter:
 
     def register_handlers(self, expenses_handlers: ExpenseHandler):
         self.router.add_api_route(
-            path="/",
-            endpoint=expenses_handlers.get_expenses,
-            response_model=list[ExpenseResponse],
+            path="/{expense_id}",
+            endpoint=expenses_handlers.get_expense_by_id,
+            response_model=ExpenseResponse,
             status_code=status.HTTP_200_OK,
             methods=["GET"],
-            name="Get Expenses",
+            name="Get Expense",
         )
         self.router.add_api_route(
             path="/report/excel",

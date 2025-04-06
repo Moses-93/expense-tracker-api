@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 from fastapi import Query, Depends
 from fastapi.responses import StreamingResponse
 
@@ -16,10 +17,17 @@ class ExpenseHandler:
     def __init__(self, expenses_manager: ExpenseManager):
         self.expenses_manager = expenses_manager
 
-    def get_expenses(
-        self, user: User = Depends(get_current_user), session=Depends(get_db)
+    def get_expense_by_id(
+        self,
+        expense_id: int,
+        user: User = Depends(get_current_user),
+        session=Depends(get_db),
     ):
-        return self.expenses_manager.get_expenses(user_id=user.id, session=session)
+        return self.expenses_manager.get_expense(
+            session=session,
+            user_id=user.id,
+            expense_id=expense_id,
+        )
 
     def get_expenses_excel_report(
         self,
