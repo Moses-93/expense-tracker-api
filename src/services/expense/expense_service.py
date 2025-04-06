@@ -1,4 +1,4 @@
-from src.services.report.report_manager import ReportManager
+from typing import Optional
 from .expense_repository import ExpenseRepository
 from src.services.exchange_rate_service import ExchangeRateService
 from sqlalchemy.orm import Session
@@ -53,16 +53,9 @@ class ExpenseService:
             )
         start_date = self.format_date_from_string(start_date)
         end_date = self.format_date_from_string(end_date)
-
-        expenses = self.expenses_repository.get_expenses(
+        return self.expenses_repository.get_expenses(
             user_id, start_date, end_date, session
         )
-
-        if not expenses:
-            return {"message": "No expenses found for the given date range."}
-
-        report_generator = ReportManager.get_report_generator(format_report)
-        return report_generator.generate_report(expenses)
 
     def update_expense(self, expense_id: int, session: Session, **kwargs):
         """
