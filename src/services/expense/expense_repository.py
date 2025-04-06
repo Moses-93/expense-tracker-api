@@ -2,7 +2,7 @@ from src.db.repository import CRUDRepository
 from src.db.models import Expense
 from sqlalchemy import select, delete, update
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from datetime import date
 
 
@@ -18,6 +18,11 @@ class ExpenseRepository:
         )
 
         return CRUDRepository.read(query, session)
+
+    def get_expense_with_filter(
+        self, session: Session, single: Optional[bool] = False, **kwargs
+    ):
+        return CRUDRepository.read(select(Expense).filter_by(**kwargs), session, single)
 
     def get_expenses(
         self, user_id: int, start_date: date, end_date: date, session: Session
