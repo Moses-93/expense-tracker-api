@@ -33,7 +33,7 @@ class ExpenseService:
         Get expenses for a given date range.
         """
 
-        return self.expenses_repository.get_expenses(user_id, session)
+        return self.expenses_repository.get_expenses_by_user_id(user_id, session)
 
     def get_expenses_report(
         self,
