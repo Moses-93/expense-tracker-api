@@ -32,15 +32,20 @@ class ExpenseHandler:
     def get_expenses_excel_report(
         self,
         user: User = Depends(get_current_user),
-        start_date: str = Query(..., description="Start date for the report"),
-        end_date: str = Query(..., description="End date for the report"),
+        start_date: Optional[str] = Query(
+            None, description="Start date for the report"
+        ),
+        end_date: Optional[str] = Query(None, description="End date for the report"),
+        all_expenses: Optional[bool] = Query(
+            None, description="Get all expenses if True"
+        ),
         session=Depends(get_db),
     ):
-
         expenses_report = self.expenses_manager.get_expenses_report(
             user_id=user.id,
             start_date=start_date,
             end_date=end_date,
+            all_expenses=all_expenses,
             format_report="excel",
             session=session,
         )
