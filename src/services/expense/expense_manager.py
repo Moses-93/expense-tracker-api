@@ -15,8 +15,10 @@ class ExpenseManager:
     def __init__(self, expenses_service: ExpenseService):
         self.expenses_service = expenses_service
 
-    def get_expenses(self, user_id: int, session: Session):
-        return self.expenses_service.get_expenses(user_id, session)
+    def get_expense(self, session: Session, user_id: int, expense_id: int):
+        return self.expenses_service.get_expenses(
+            session, user_id, expense_id=expense_id
+        )
 
     def get_expenses_report(
         self,
