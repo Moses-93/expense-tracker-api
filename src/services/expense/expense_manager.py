@@ -1,5 +1,7 @@
+from typing import Optional
 from sqlalchemy.orm import Session
 
+from src.services.report.report_manager import ReportManager
 from src.services.expense.expense_service import ExpenseService
 from src.api.expenses.schemas import ExpenseCreate, ExpenseUpdate
 
@@ -19,16 +21,28 @@ class ExpenseManager:
     def get_expenses_report(
         self,
         user_id: int,
-        start_date: str,
-        end_date: str,
+        start_date: Optional[str],
+        end_date: Optional[str],
+        all_expenses: Optional[bool],
         format_report: str,
         session: Session,
     ):
         """
         Get expenses report for a given date range.
         """
-        return self.expenses_service.get_expenses_report(
-            user_id, start_date, end_date, format_report, session
+        if all_expenses:
+            expenses = self.expenses_service.get_expenses(
+                session,
+                user_id,
+                all_expenses=True,
+            )
+
+        else:
+            expenses = self.expenses_service.get_expenses(
+                session, user_id, start_date, end_date
+            )
+        return ReportManager.get_report_generator(format_report).generate_report(
+            expenses
         )
 
     def create_expense(self, user_id: int, expense: ExpenseCreate, session: Session):

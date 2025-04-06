@@ -28,24 +28,29 @@ class ExpenseService:
             user_id, name, uah_amount, usd_amount, date, session
         )
 
-    def get_expenses(self, user_id: int, session: Session):
+    def get_expenses(
+        self,
+        session: Session,
+        user_id: int,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
+        all_expenses: Optional[bool] = False,
+        expense_id: Optional[int] = None,
+    ):
         """
         Get expenses for a given date range.
         """
-
-        return self.expenses_repository.get_expenses_by_user_id(user_id, session)
-
-    def get_expenses_report(
-        self,
-        user_id: int,
-        start_date: str,
-        end_date: str,
-        format_report: str,
-        session: Session,
-    ):
-        """
-        Get expenses report for a given date range.
-        """
+        if all_expenses:
+            return self.expenses_repository.get_expense_with_filter(
+                session, user_id=user_id
+            )
+        elif expense_id:
+            return self.expenses_repository.get_expense_with_filter(
+                session,
+                single=True,
+                user_id=user_id,
+                id=expense_id,
+            )
         start_date = self.format_date_from_string(start_date)
         end_date = self.format_date_from_string(end_date)
 
