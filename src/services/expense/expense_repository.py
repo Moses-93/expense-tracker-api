@@ -12,13 +12,6 @@ class ExpenseRepository:
     It provides methods to create, read, update, and delete expenses.
     """
 
-    def get_expenses_by_user_id(self, user_id: int, session: Session) -> List[Expense]:
-        query = select(Expense).where(
-            Expense.user_id == user_id,
-        )
-
-        return CRUDRepository.read(query, session)
-
     def get_expense_with_filter(
         self, session: Session, single: Optional[bool] = False, **kwargs
     ):
