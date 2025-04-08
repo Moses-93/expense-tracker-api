@@ -1,5 +1,6 @@
 from typing import Optional
 from sqlalchemy.orm import Session
+from datetime import date
 
 from src.services.report.report_manager import ReportManager
 from src.services.expense.expense_service import ExpenseService
@@ -23,8 +24,8 @@ class ExpenseManager:
     def get_expenses_report(
         self,
         user_id: int,
-        start_date: Optional[str],
-        end_date: Optional[str],
+        start_date: Optional[date],
+        end_date: Optional[date],
         all_expenses: Optional[bool],
         format_report: str,
         session: Session,

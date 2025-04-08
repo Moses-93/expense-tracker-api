@@ -2,6 +2,7 @@ import logging
 from typing import Optional
 from fastapi import Query, Depends
 from fastapi.responses import StreamingResponse
+from datetime import date
 
 from src.services.user_service import get_current_user
 from src.db.models import User
@@ -32,10 +33,10 @@ class ExpenseHandler:
     def get_expenses_excel_report(
         self,
         user: User = Depends(get_current_user),
-        start_date: Optional[str] = Query(
+        start_date: Optional[date] = Query(
             None, description="Start date for the report"
         ),
-        end_date: Optional[str] = Query(None, description="End date for the report"),
+        end_date: Optional[date] = Query(None, description="End date for the report"),
         all_expenses: Optional[bool] = Query(
             None, description="Get all expenses if True"
         ),
