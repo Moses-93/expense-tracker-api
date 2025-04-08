@@ -10,12 +10,6 @@ class ExpenseService:
     def __init__(self, expenses_repository: ExpenseRepository):
         self.expenses_repository = expenses_repository
 
-    def format_date_from_string(self, date_string: str) -> date:
-        """
-        Convert a string to a date object.
-        """
-        return date.fromisoformat(date_string)
-
     def create_expense(
         self, user_id: int, name: str, uah_amount: float, date: str, session: Session
     ):
@@ -32,8 +26,8 @@ class ExpenseService:
         self,
         session: Session,
         user_id: int,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
+        start_date: Optional[date] = None,
+        end_date: Optional[date] = None,
         all_expenses: Optional[bool] = False,
         expense_id: Optional[int] = None,
     ):
@@ -51,8 +45,6 @@ class ExpenseService:
                 user_id=user_id,
                 id=expense_id,
             )
-        start_date = self.format_date_from_string(start_date)
-        end_date = self.format_date_from_string(end_date)
         return self.expenses_repository.get_expenses(
             user_id, start_date, end_date, session
         )
