@@ -55,7 +55,6 @@ class ExcelReport(ReportBase):
         Writes the list of expenses into the worksheet.
         """
         for exp in expenses:
-            logger.info(f"Expense: {exp}")
             ws.append([exp.id, exp.name, exp.date, exp.uah_amount, exp.usd_amount])
 
     def _write_totals(self, ws, expenses: List[Expense]):
