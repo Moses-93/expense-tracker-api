@@ -2,7 +2,7 @@ from src.services.report.interfaces import ReportBase
 from src.services.report.excel_report import ExcelReport
 
 
-class ReportManager:
+class ReportFactory:
     _instances = {}
 
     @classmethod
