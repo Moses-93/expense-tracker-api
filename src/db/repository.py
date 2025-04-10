@@ -3,7 +3,7 @@ from typing import List, Optional, Union
 from sqlalchemy import Delete, Select, Update
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Session
-
+from src.core.exceptions.database_handler import handle_db_exceptions
 
 logger = logging.getLogger(__name__)
 
@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 class CRUDRepository:
 
     @staticmethod
+    @handle_db_exceptions("create")
     def create(query: DeclarativeBase, session: Session) -> DeclarativeBase:
         """Creates a new entry in the database.
 
@@ -27,6 +28,7 @@ class CRUDRepository:
         return query
 
     @staticmethod
+    @handle_db_exceptions("read")
     def read(
         query: Select, session: Session, single: bool = False
     ) -> Union[Optional[DeclarativeBase], List[DeclarativeBase]]:
@@ -44,6 +46,7 @@ class CRUDRepository:
         return result.scalars().first() if single else result.scalars().all()
 
     @staticmethod
+    @handle_db_exceptions("update")
     def update(query: Update, session: Session) -> bool:
         """Executes a UPDATE query to the database
 
@@ -59,6 +62,7 @@ class CRUDRepository:
         return result.rowcount > 0
 
     @staticmethod
+    @handle_db_exceptions("delete")
     def delete(query: Delete, session: Session) -> bool:
         """Executes a UPDATE query to the database
 
