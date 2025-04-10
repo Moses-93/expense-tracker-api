@@ -7,7 +7,7 @@ from src.services.expense.expense_service import ExpenseService
 from src.api.expenses.schemas import ExpenseCreate, ExpenseUpdate
 
 
-class ExpenseManager:
+class ExpenseController:
     """
     This class manages expenses for a user.
     It provides methods to create, read, update, and delete expenses.
