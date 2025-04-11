@@ -26,31 +26,19 @@ class ExpenseService:
             session, user_id, expense.name, expense.amount, usd_amount, expense.date
         )
 
-    def get_expenses(
-        self,
-        session: Session,
-        user_id: int,
-        start_date: Optional[date] = None,
-        end_date: Optional[date] = None,
-        all_expenses: Optional[bool] = False,
-        expense_id: Optional[int] = None,
-    ):
+    def get_expense_by_id(self, session: Session, expense_id: int):
+        return self.expenses_repository.get_by_filter(session, True, id=expense_id)
+
+    def get_expenses(self, session: Session, params: dto.GetExpenseParams):
         """
         Get expenses for a given date range.
         """
-        if all_expenses:
-            return self.expenses_repository.get_expense_with_filter(
-                session, user_id=user_id
+        if params.all_expenses:
+            return self.expenses_repository.get_by_filter(
+                session, user_id=params.user_id
             )
-        elif expense_id:
-            return self.expenses_repository.get_expense_with_filter(
-                session,
-                single=True,
-                user_id=user_id,
-                id=expense_id,
-            )
-        return self.expenses_repository.get_expenses(
-            user_id, start_date, end_date, session
+        return self.expenses_repository.get_by_date_range(
+            session, params.user_id, params.start_date, params.end_date
         )
 
     def update_expense(self, expense_id: int, session: Session, **kwargs):
