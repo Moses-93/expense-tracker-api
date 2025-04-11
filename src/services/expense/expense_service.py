@@ -7,8 +7,13 @@ from datetime import date
 
 class ExpenseService:
 
-    def __init__(self, expenses_repository: ExpenseRepository):
+    def __init__(
+        self,
+        expenses_repository: ExpenseRepository,
+        exchange_service: ExchangeRateService,
+    ):
         self.expenses_repository = expenses_repository
+        self.exchange_service = exchange_service
 
     def create_expense(
         self, user_id: int, name: str, uah_amount: float, date: str, session: Session
@@ -16,8 +21,7 @@ class ExpenseService:
         """
         Create a new expense.
         """
-        exchange_rate = ExchangeRateService.get_usd_exchange_rate()
-        usd_amount = uah_amount / exchange_rate
+        usd_amount = self.exchange_service.convert_uah_to_usd(expense.amount)
         return self.expenses_repository.create_expense(
             user_id, name, uah_amount, usd_amount, date, session
         )
