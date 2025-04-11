@@ -1,61 +1,58 @@
-from typing import Optional
-from .expense_repository import ExpenseRepository
-from src.services.exchange_rate_service import ExchangeRateService
 from sqlalchemy.orm import Session
-from datetime import date
+
+from src.services.exchange_rate_service import ExchangeRateService
+from src.schemas.expense import schema, dto
+from .expense_repository import ExpenseRepository
 
 
 class ExpenseService:
 
-    def __init__(self, expenses_repository: ExpenseRepository):
+    def __init__(
+        self,
+        expenses_repository: ExpenseRepository,
+        exchange_service: ExchangeRateService,
+    ):
         self.expenses_repository = expenses_repository
+        self.exchange_service = exchange_service
 
     def create_expense(
-        self, user_id: int, name: str, uah_amount: float, date: str, session: Session
+        self, session: Session, user_id: int, expense: schema.ExpenseCreate
     ):
         """
         Create a new expense.
         """
-        exchange_rate = ExchangeRateService.get_usd_exchange_rate()
-        usd_amount = uah_amount / exchange_rate
+        usd_amount = self.exchange_service.convert_uah_to_usd(expense.amount)
         return self.expenses_repository.create_expense(
-            user_id, name, uah_amount, usd_amount, date, session
+            session, user_id, expense.name, expense.amount, usd_amount, expense.date
         )
 
-    def get_expenses(
-        self,
-        session: Session,
-        user_id: int,
-        start_date: Optional[date] = None,
-        end_date: Optional[date] = None,
-        all_expenses: Optional[bool] = False,
-        expense_id: Optional[int] = None,
-    ):
+    def get_expense_by_id(self, session: Session, expense_id: int):
+        return self.expenses_repository.get_by_filter(session, True, id=expense_id)
+
+    def get_expenses(self, session: Session, params: dto.GetExpenseParams):
         """
         Get expenses for a given date range.
         """
-        if all_expenses:
-            return self.expenses_repository.get_expense_with_filter(
-                session, user_id=user_id
+        if params.all_expenses:
+            return self.expenses_repository.get_by_filter(
+                session, user_id=params.user_id
             )
-        elif expense_id:
-            return self.expenses_repository.get_expense_with_filter(
-                session,
-                single=True,
-                user_id=user_id,
-                id=expense_id,
-            )
-        return self.expenses_repository.get_expenses(
-            user_id, start_date, end_date, session
+        return self.expenses_repository.get_by_date_range(
+            session, params.user_id, params.start_date, params.end_date
         )
 
-    def update_expense(self, expense_id: int, session: Session, **kwargs):
+    def update_expense(
+        self, session: Session, expense_id: int, expense: schema.ExpenseUpdate
+    ):
         """
         Update an expense.
         """
-        return self.expenses_repository.update_expense(expense_id, session, **kwargs)
+        updated_data = expense.model_dump(exclude_unset=True)
+        return self.expenses_repository.update_expense(
+            expense_id, session, **updated_data
+        )
 
-    def delete_expense(self, expense_id: int, session: Session):
+    def delete_expense(self, session: Session, expense_id: int):
         """
         Delete an expense.
         """

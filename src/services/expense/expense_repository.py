@@ -2,7 +2,7 @@ from src.db.repository import CRUDRepository
 from src.db.models import Expense
 from sqlalchemy import select, delete, update
 from sqlalchemy.orm import Session
-from typing import List, Optional
+from typing import List, Optional, Union
 from datetime import date
 
 
@@ -12,13 +12,13 @@ class ExpenseRepository:
     It provides methods to create, read, update, and delete expenses.
     """
 
-    def get_expense_with_filter(
+    def get_by_filter(
         self, session: Session, single: Optional[bool] = False, **kwargs
-    ):
+    ) -> Union[List[Expense], Expense]:
         return CRUDRepository.read(select(Expense).filter_by(**kwargs), session, single)
 
-    def get_expenses(
-        self, user_id: int, start_date: date, end_date: date, session: Session
+    def get_by_date_range(
+        self, session: Session, user_id: int, start_date: date, end_date: date
     ) -> List[Expense]:
         """
         Get expenses for a given date range.
@@ -33,12 +33,12 @@ class ExpenseRepository:
 
     def create_expense(
         self,
+        session: Session,
         user_id: int,
         name: str,
         uah_amount: float,
         usd_amount: float,
         date: date,
-        session: Session,
     ) -> Expense:
         """
         Create a new expense.
@@ -53,7 +53,7 @@ class ExpenseRepository:
 
         return CRUDRepository.create(expense, session)
 
-    def update_expense(self, expense_id: int, session: Session, **kwargs) -> bool:
+    def update_expense(self, session: Session, expense_id: int, **kwargs) -> bool:
         """
         Update an expense.
         """
@@ -67,7 +67,7 @@ class ExpenseRepository:
 
         return CRUDRepository.update(query, session)
 
-    def delete_expense(self, expense_id: int, session: Session) -> bool:
+    def delete_expense(self, session: Session, expense_id: int) -> bool:
         """
         Delete an expense.
         """
