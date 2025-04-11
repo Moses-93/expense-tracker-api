@@ -53,7 +53,7 @@ class ExpenseRepository:
 
         return CRUDRepository.create(expense, session)
 
-    def update_expense(self, session: Session, expense_id: int,  **kwargs) -> bool:
+    def update_expense(self, session: Session, expense_id: int, **kwargs) -> bool:
         """
         Update an expense.
         """
