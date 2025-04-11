@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status
+from src.schemas.expense.schema import ExpenseResponse
 from .expenses_handler import ExpenseHandler
-from .schemas import ExpenseResponse
 
 
 class ExpenseRouter:
