@@ -1,8 +1,8 @@
 from typing import Optional
 from .expense_repository import ExpenseRepository
 from src.services.exchange_rate_service import ExchangeRateService
-from sqlalchemy.orm import Session
-from datetime import date
+from src.schemas.expense import schema, dto
+from .expense_repository import ExpenseRepository
 
 
 class ExpenseService:
@@ -16,14 +16,14 @@ class ExpenseService:
         self.exchange_service = exchange_service
 
     def create_expense(
-        self, user_id: int, name: str, uah_amount: float, date: str, session: Session
+        self, session: Session, user_id: int, expense: schema.ExpenseCreate
     ):
         """
         Create a new expense.
         """
         usd_amount = self.exchange_service.convert_uah_to_usd(expense.amount)
         return self.expenses_repository.create_expense(
-            user_id, name, uah_amount, usd_amount, date, session
+            session, user_id, expense.name, expense.amount, usd_amount, expense.date
         )
 
     def get_expenses(
