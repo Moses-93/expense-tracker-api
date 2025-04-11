@@ -1,5 +1,5 @@
-from typing import Optional
-from .expense_repository import ExpenseRepository
+from sqlalchemy.orm import Session
+
 from src.services.exchange_rate_service import ExchangeRateService
 from src.schemas.expense import schema, dto
 from .expense_repository import ExpenseRepository
@@ -41,13 +41,18 @@ class ExpenseService:
             session, params.user_id, params.start_date, params.end_date
         )
 
-    def update_expense(self, expense_id: int, session: Session, **kwargs):
+    def update_expense(
+        self, session: Session, expense_id: int, expense: schema.ExpenseUpdate
+    ):
         """
         Update an expense.
         """
-        return self.expenses_repository.update_expense(expense_id, session, **kwargs)
+        updated_data = expense.model_dump(exclude_unset=True)
+        return self.expenses_repository.update_expense(
+            expense_id, session, **updated_data
+        )
 
-    def delete_expense(self, expense_id: int, session: Session):
+    def delete_expense(self, session: Session, expense_id: int):
         """
         Delete an expense.
         """
