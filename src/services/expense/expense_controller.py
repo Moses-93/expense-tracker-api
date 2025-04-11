@@ -1,10 +1,12 @@
+from fastapi import HTTPException
 from typing import Optional
 from sqlalchemy.orm import Session
 from datetime import date
 
-from src.services.report.report_manager import ReportManager
+from src.db.models import Expense
+from src.services.report.report_factory import ReportFactory
 from src.services.expense.expense_service import ExpenseService
-from src.api.expenses.schemas import ExpenseCreate, ExpenseUpdate
+from src.schemas.expense import schema, dto
 
 
 class ExpenseController:
@@ -13,64 +15,70 @@ class ExpenseController:
     It provides methods to create, read, update, and delete expenses.
     """
 
-    def __init__(self, expenses_service: ExpenseService):
+    def __init__(self, expenses_service: ExpenseService, report: ReportFactory):
         self.expenses_service = expenses_service
+        self.report = report
 
-    def get_expense(self, session: Session, user_id: int, expense_id: int):
-        return self.expenses_service.get_expenses(
-            session, user_id, expense_id=expense_id
-        )
+    def get_expense_by_id(self, session: Session, expense_id: int) -> Expense:
+        expense = self.expenses_service.get_expense_by_id(session, expense_id)
+        if not expense:
+            raise HTTPException(404, f"Стаття витрат із ID {expense_id} не знайдена.")
+        return expense
 
     def get_expenses_report(
         self,
+        session: Session,
         user_id: int,
         start_date: Optional[date],
         end_date: Optional[date],
         all_expenses: Optional[bool],
         format_report: str,
-        session: Session,
     ):
         """
         Get expenses report for a given date range.
         """
-        if all_expenses:
-            expenses = self.expenses_service.get_expenses(
-                session,
-                user_id,
-                all_expenses=True,
-            )
-
-        else:
-            expenses = self.expenses_service.get_expenses(
-                session, user_id, start_date, end_date
-            )
-        return ReportManager.get_report_generator(format_report).generate_report(
-            expenses
+        expense_params = dto.GetExpenseParams(
+            user_id, start_date, end_date, all_expenses, format_report
         )
+        expenses = self.expenses_service.get_expenses(session, expense_params)
+        if not expenses:
+            raise HTTPException(404, "Ми не змогли знайти ваші витрати.")
 
-    def create_expense(self, user_id: int, expense: ExpenseCreate, session: Session):
+        return self.report.get_report_generator(format_report).generate_report(expenses)
+
+    def create_expense(
+        self, user_id: int, expense: schema.ExpenseCreate, session: Session
+    ):
         """
         Create a new expense.
         """
 
-        return self.expenses_service.create_expense(
-            user_id, expense.name, expense.amount, expense.date, session
-        )
+        expense = self.expenses_service.create_expense(session, user_id, expense)
+        if not expense:
+            raise HTTPException(
+                422,
+                "Щось пішло не так під час створення статті витрат. Спробуйте пізніше.",
+            )
+        return expense
 
     def update_expense(
-        self, expense_id: int, expense_update: ExpenseUpdate, session: Session
+        self, expense_id: int, expense_update: schema.ExpenseUpdate, session: Session
     ):
         """
         Update an expense.
         """
-        # Convert the date string to a date object
-        updating_expense = expense_update.model_dump(exclude_unset=True)
-        return self.expenses_service.update_expense(
-            expense_id, session, **updating_expense
+        result = self.expenses_service.update_expense(
+            session, expense_id, expense_update
         )
+        if not result:
+            raise HTTPException(422, "Не вдалося оновити ваші дані. Спробуйте пізніше.")
 
     def delete_expense(self, expense_id: int, session: Session):
         """
         Delete an expense.
         """
-        return self.expenses_service.delete_expense(expense_id, session)
+        result = self.expenses_service.delete_expense(session, expense_id)
+        if not result:
+            raise HTTPException(
+                422, "Сталася помилка під час видалення. Спробуйте пізніше."
+            )
