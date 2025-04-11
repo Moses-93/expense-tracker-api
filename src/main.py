@@ -3,20 +3,9 @@ import sys
 import logging
 from fastapi import FastAPI
 from src.core.middleware.auth import AuthMiddleware
-from src.api.expenses.expenses_router import ExpenseRouter
-from src.api.expenses.expenses_handler import ExpenseHandler
-from src.services.expense.expense_service import ExpenseService
-from src.services.expense.expense_repository import ExpenseRepository
-from src.services.expense.expense_manager import ExpenseManager
+from src.core.exceptions.exception_handlers import register_exception_handlers
+from src.api.api_factory import APIFactory
 
-
-api_router = ExpenseRouter(
-    expenses_handlers=ExpenseHandler(
-        expenses_manager=ExpenseManager(
-            expenses_service=ExpenseService(expenses_repository=ExpenseRepository())
-        )
-    )
-).router
 
 os.makedirs("logs", exist_ok=True)
 
@@ -31,7 +20,9 @@ logging.basicConfig(
 
 app = FastAPI()
 app.add_middleware(AuthMiddleware)
-app.include_router(api_router)
+register_exception_handlers(app)
+api_factory = APIFactory()
+app.include_router(api_factory.get_main_router())
 
 if __name__ == "__main__":
     import uvicorn
