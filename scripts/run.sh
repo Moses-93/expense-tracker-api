@@ -1,21 +1,8 @@
-DB_FILE="database.db"
+# Wait 5 seconds before launching the FastAPI to give the database time to start
+sleep 5
 
-if [ ! -d "migrations" ]; then
-    echo "⚠️ Alembic not initialized. Initializing..."
-    alembic init migrations
-fi
-
-if [ ! -f "$DB_FILE" ]; then
-    echo "⚠️ Database not found. Creating..."
-    
-    if [ -z "$(ls -A migrations/versions 2>/dev/null)" ]; then
-        echo "📌 Creating initial migration..."
-        alembic revision --autogenerate -m "Initial migration"
-    fi
-
-    echo "🔄 Applying migrations..."
-    alembic upgrade head
-fi
+echo "🔄 Applying migrations..."
+alembic upgrade head
 
 echo "🚀 Starting FastAPI..."
 python -m src.main
