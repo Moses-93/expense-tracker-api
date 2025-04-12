@@ -9,6 +9,16 @@ from src.services.expense.expense_service import ExpenseService
 from src.schemas.expense import schema, dto
 
 
+ERROR_MESSAGES = {
+    "create_error": "Щось пішло не так під час створення статті витрат. Спробуйте пізніше.",
+    "read_error": "Ми не змогли знайти ваші витрати.",
+    "read_error_by_id": "Стаття витрат із ID {id} не знайдена.",
+    "update_error": "Не вдалося оновити ваші дані.\nМожливо статті із ID {id} не існує. Спробуйте пізніше.",
+    "delete_error": "Сталася помилка під час видалення. Можливо статті із ID {id} не існує.\n"
+    "Перевірте ваші дані та спробуйте пізніше.",
+}
+
+
 class ExpenseController:
     """
     This class manages expenses for a user.
@@ -22,7 +32,9 @@ class ExpenseController:
     def get_expense_by_id(self, session: Session, expense_id: int) -> Expense:
         expense = self.expenses_service.get_expense_by_id(session, expense_id)
         if not expense:
-            raise HTTPException(404, f"Стаття витрат із ID {expense_id} не знайдена.")
+            raise HTTPException(
+                404, ERROR_MESSAGES["read_error_by_id"].format(id=expense_id)
+            )
         return expense
 
     def get_expenses_report(
@@ -42,7 +54,7 @@ class ExpenseController:
         )
         expenses = self.expenses_service.get_expenses(session, expense_params)
         if not expenses:
-            raise HTTPException(404, "Ми не змогли знайти ваші витрати.")
+            raise HTTPException(404, ERROR_MESSAGES["read_error"])
 
         return self.report.get_report_generator(format_report).generate_report(expenses)
 
@@ -57,7 +69,7 @@ class ExpenseController:
         if not expense:
             raise HTTPException(
                 422,
-                "Щось пішло не так під час створення статті витрат. Спробуйте пізніше.",
+                ERROR_MESSAGES["create_error"],
             )
         return expense
 
@@ -71,7 +83,9 @@ class ExpenseController:
             session, expense_id, expense_update
         )
         if not result:
-            raise HTTPException(422, "Не вдалося оновити ваші дані. Спробуйте пізніше.")
+            raise HTTPException(
+                422, ERROR_MESSAGES["update_error"].format(id=expense_id)
+            )
 
     def delete_expense(self, expense_id: int, session: Session):
         """
@@ -80,5 +94,5 @@ class ExpenseController:
         result = self.expenses_service.delete_expense(session, expense_id)
         if not result:
             raise HTTPException(
-                422, "Сталася помилка під час видалення. Спробуйте пізніше."
+                422, ERROR_MESSAGES["delete_error"].format(id=expense_id)
             )
