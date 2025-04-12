@@ -49,11 +49,11 @@ class ExpenseService:
         """
         updated_data = expense.model_dump(exclude_unset=True)
         return self.expenses_repository.update_expense(
-            expense_id, session, **updated_data
+            session, expense_id, **updated_data
         )
 
     def delete_expense(self, session: Session, expense_id: int):
         """
         Delete an expense.
         """
-        return self.expenses_repository.delete_expense(expense_id, session)
+        return self.expenses_repository.delete_expense(session, expense_id)

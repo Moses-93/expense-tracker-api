@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:16.8
+    environment:
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: ${PG_DB}
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+  web:
+    build: .
+    env_file:
+      - .env
+    environment:
+      PG_HOST: db
+    command: [ "bash", "./scripts/run.sh" ]
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+
+volumes:
+  pg_data:
