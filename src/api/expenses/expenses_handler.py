@@ -63,7 +63,7 @@ class ExpenseHandler:
         session=Depends(get_db),
     ):
         return self.expense_controller.create_expense(
-            user_id=user.id, expense=expense, session=session
+            user_id=user.id, expense_schema=expense, session=session
         )
 
     def update_expense(

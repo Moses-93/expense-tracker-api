@@ -27,12 +27,16 @@ EXCEPTION_CONFIG = {
 }
 
 
+def _create_handler(config):
+    async def handler(request: Request, exc):
+        return JSONResponse(
+            status_code=config["status_code"],
+            content={"detail": config["message"]},
+        )
+
+    return handler
+
+
 def register_exception_handlers(app: FastAPI):
     for exc_class, config in EXCEPTION_CONFIG.items():
-
-        @app.exception_handler(exc_class)
-        async def handler(request: Request, exc, config=config):
-            return JSONResponse(
-                status_code=config["status_code"],
-                content={"detail": config["message"]},
-            )
+        app.add_exception_handler(exc_class, _create_handler(config))
