@@ -31,6 +31,7 @@ class ExpenseHandler:
     def get_expenses_excel_report(
         self,
         user: User = Depends(get_current_user),
+        report_type: str = Query(...),
         start_date: Optional[date] = Query(
             None, description="Start date for the report"
         ),
@@ -45,7 +46,7 @@ class ExpenseHandler:
             start_date=start_date,
             end_date=end_date,
             all_expenses=all_expenses,
-            format_report="excel",
+            format_report=report_type,
             session=session,
         )
         headers = {"Content-Disposition": "attachment; filename=expenses_report.xlsx"}
