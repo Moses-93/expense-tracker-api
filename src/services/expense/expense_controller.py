@@ -49,7 +49,7 @@ class ExpenseController:
         end_date: Optional[date],
         all_expenses: Optional[bool],
         format_report: str,
-    ):
+    ) -> Union[List[Expense], bytes]:
         """
         Get expenses report for a given date range.
         """
@@ -89,7 +89,7 @@ class ExpenseController:
 
     def create_expense(
         self, user_id: int, expense_schema: schema.ExpenseCreate, session: Session
-    ):
+    ) -> Expense:
         """
         Create a new expense.
         """
@@ -107,7 +107,7 @@ class ExpenseController:
 
     def update_expense(
         self, expense_id: int, expense_update: schema.ExpenseUpdate, session: Session
-    ):
+    ) -> Expense:
         """
         Update an expense.
         """
