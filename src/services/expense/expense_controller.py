@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from datetime import date
 
 from src.db.models import Expense
-from src.services.report.report_factory import ReportFactory
+from src.services.report.excel_report import ExcelReport
 from src.services.expense.expense_service import ExpenseService
 from src.schemas.expense import schema, dto
 
@@ -28,9 +28,8 @@ class ExpenseController:
     It provides methods to create, read, update, and delete expenses.
     """
 
-    def __init__(self, expenses_service: ExpenseService, report: ReportFactory):
+    def __init__(self, expenses_service: ExpenseService):
         self.expenses_service = expenses_service
-        self.report = report
 
     def get_expense_by_id(self, session: Session, expense_id: int) -> Expense:
         expense = self.expenses_service.get_expense_by_id(session, expense_id)
