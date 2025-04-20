@@ -8,13 +8,13 @@ class ExpenseBase(BaseModel):
 
 
 class ExpenseCreate(ExpenseBase):
-    amount: float = Field(..., description="Amount of the expense")
+    uah_amount: float = Field(..., description="Amount of the expense")
     date: Date = Field(..., description="Date of the expense")
 
 
 class ExpenseUpdate(ExpenseBase):
     name: Optional[str] = Field(None, description="Name of the expense")
-    amount: Optional[float] = Field(None, description="Amount of the expense")
+    uah_amount: Optional[float] = Field(None, description="Amount of the expense")
     date: Optional[Date] = Field(None, description="Date of the expense")
 
 
