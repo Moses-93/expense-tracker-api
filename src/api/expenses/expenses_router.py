@@ -1,5 +1,6 @@
 from fastapi import APIRouter, status
 from src.schemas.expense.schema import ExpenseResponse
+from src.schemas.expense import schema
 from .expenses_handler import ExpenseHandler
 
 
@@ -18,7 +19,7 @@ class ExpenseRouter:
             name="Get Expense",
         )
         self.router.add_api_route(
-            path="/report/excel",
+            path="/report/",
             endpoint=expenses_handlers.get_expenses_excel_report,
             methods=["GET"],
             name="Get Expenses Report",
@@ -34,6 +35,7 @@ class ExpenseRouter:
             path="/{expense_id}",
             endpoint=expenses_handlers.update_expense,
             status_code=status.HTTP_200_OK,
+            response_model=schema.ExpenseResponse,
             methods=["PATCH"],
             name="Update Expense",
         )

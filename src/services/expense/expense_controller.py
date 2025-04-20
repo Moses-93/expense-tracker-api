@@ -1,11 +1,12 @@
 import logging
 from fastapi import HTTPException
-from typing import Optional
+from typing import List, Optional, Union
+from fastapi.responses import StreamingResponse, JSONResponse
 from sqlalchemy.orm import Session
 from datetime import date
 
 from src.db.models import Expense
-from src.services.report.report_factory import ReportFactory
+from src.services.report.excel_report import ExcelReport
 from src.services.expense.expense_service import ExpenseService
 from src.schemas.expense import schema, dto
 
@@ -28,9 +29,8 @@ class ExpenseController:
     It provides methods to create, read, update, and delete expenses.
     """
 
-    def __init__(self, expenses_service: ExpenseService, report: ReportFactory):
+    def __init__(self, expenses_service: ExpenseService):
         self.expenses_service = expenses_service
-        self.report = report
 
     def get_expense_by_id(self, session: Session, expense_id: int) -> Expense:
         expense = self.expenses_service.get_expense_by_id(session, expense_id)
@@ -49,7 +49,7 @@ class ExpenseController:
         end_date: Optional[date],
         all_expenses: Optional[bool],
         format_report: str,
-    ):
+    ) -> Union[List[Expense], bytes]:
         """
         Get expenses report for a given date range.
         """
@@ -62,12 +62,34 @@ class ExpenseController:
                 f"Error during receipt of expenses. Arguments: {expense_params}"
             )
             raise HTTPException(404, ERROR_MESSAGES["read_error"])
+        return self._send_report(format_report, expenses)
 
-        return self.report.get_report_generator(format_report).generate_report(expenses)
+    def _send_report(self, format_report: str, expenses: List[Expense]):
+        match format_report:
+            case "json":
+
+                return JSONResponse(
+                    content=[
+                        schema.ExpenseResponse.model_validate(e).model_dump(mode="json")
+                        for e in expenses
+                    ]
+                )
+            case "xlsx":
+                excel_report = ExcelReport()
+                expenses_report = excel_report.generate_report(expenses)
+
+                headers = {
+                    "Content-Disposition": "attachment; filename=expenses_report.xlsx"
+                }
+                return StreamingResponse(
+                    content=expenses_report,
+                    media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    headers=headers,
+                )
 
     def create_expense(
         self, user_id: int, expense_schema: schema.ExpenseCreate, session: Session
-    ):
+    ) -> Expense:
         """
         Create a new expense.
         """
@@ -85,7 +107,7 @@ class ExpenseController:
 
     def update_expense(
         self, expense_id: int, expense_update: schema.ExpenseUpdate, session: Session
-    ):
+    ) -> Expense:
         """
         Update an expense.
         """
@@ -97,6 +119,7 @@ class ExpenseController:
             raise HTTPException(
                 422, ERROR_MESSAGES["update_error"].format(id=expense_id)
             )
+        return self.expenses_service.get_expense_by_id(session, expense_id)
 
     def delete_expense(self, expense_id: int, session: Session):
         """

@@ -1,7 +1,6 @@
 import logging
 from typing import Optional
 from fastapi import Query, Depends
-from fastapi.responses import StreamingResponse
 from datetime import date
 
 from src.services.user_service import get_current_user
@@ -31,6 +30,7 @@ class ExpenseHandler:
     def get_expenses_excel_report(
         self,
         user: User = Depends(get_current_user),
+        report_type: str = Query(...),
         start_date: Optional[date] = Query(
             None, description="Start date for the report"
         ),
@@ -40,20 +40,13 @@ class ExpenseHandler:
         ),
         session=Depends(get_db),
     ):
-        expenses_report = self.expense_controller.get_expenses_report(
+        return self.expense_controller.get_expenses_report(
             user_id=user.id,
             start_date=start_date,
             end_date=end_date,
             all_expenses=all_expenses,
-            format_report="excel",
+            format_report=report_type,
             session=session,
-        )
-        headers = {"Content-Disposition": "attachment; filename=expenses_report.xlsx"}
-
-        return StreamingResponse(
-            content=expenses_report,
-            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            headers=headers,
         )
 
     def create_expense(
@@ -69,7 +62,7 @@ class ExpenseHandler:
     def update_expense(
         self, expense_id: int, expense: ExpenseUpdate, session=Depends(get_db)
     ):
-        self.expense_controller.update_expense(
+        return self.expense_controller.update_expense(
             expense_id=expense_id, expense_update=expense, session=session
         )
 
