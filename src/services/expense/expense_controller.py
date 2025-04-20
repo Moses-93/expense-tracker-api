@@ -1,6 +1,7 @@
 import logging
 from fastapi import HTTPException
-from typing import Optional
+from typing import List, Optional, Union
+from fastapi.responses import StreamingResponse, JSONResponse
 from sqlalchemy.orm import Session
 from datetime import date
 
@@ -61,8 +62,30 @@ class ExpenseController:
                 f"Error during receipt of expenses. Arguments: {expense_params}"
             )
             raise HTTPException(404, ERROR_MESSAGES["read_error"])
+        return self._send_report(format_report, expenses)
 
-        return self.report.get_report_generator(format_report).generate_report(expenses)
+    def _send_report(self, format_report: str, expenses: List[Expense]):
+        match format_report:
+            case "json":
+
+                return JSONResponse(
+                    content=[
+                        schema.ExpenseResponse.model_validate(e).model_dump(mode="json")
+                        for e in expenses
+                    ]
+                )
+            case "xlsx":
+                excel_report = ExcelReport()
+                expenses_report = excel_report.generate_report(expenses)
+
+                headers = {
+                    "Content-Disposition": "attachment; filename=expenses_report.xlsx"
+                }
+                return StreamingResponse(
+                    content=expenses_report,
+                    media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    headers=headers,
+                )
 
     def create_expense(
         self, user_id: int, expense_schema: schema.ExpenseCreate, session: Session
