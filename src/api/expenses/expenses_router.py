@@ -1,5 +1,6 @@
 from fastapi import APIRouter, status
 from src.schemas.expense.schema import ExpenseResponse
+from src.schemas.expense import schema
 from .expenses_handler import ExpenseHandler
 
 
@@ -34,6 +35,7 @@ class ExpenseRouter:
             path="/{expense_id}",
             endpoint=expenses_handlers.update_expense,
             status_code=status.HTTP_200_OK,
+            response_model=schema.ExpenseResponse,
             methods=["PATCH"],
             name="Update Expense",
         )

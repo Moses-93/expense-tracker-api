@@ -96,6 +96,7 @@ class ExpenseController:
             raise HTTPException(
                 422, ERROR_MESSAGES["update_error"].format(id=expense_id)
             )
+        return self.expenses_service.get_expense_by_id(session, expense_id)
 
     def delete_expense(self, expense_id: int, session: Session):
         """

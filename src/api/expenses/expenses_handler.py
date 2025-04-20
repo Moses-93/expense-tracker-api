@@ -70,7 +70,7 @@ class ExpenseHandler:
     def update_expense(
         self, expense_id: int, expense: ExpenseUpdate, session=Depends(get_db)
     ):
-        self.expense_controller.update_expense(
+        return self.expense_controller.update_expense(
             expense_id=expense_id, expense_update=expense, session=session
         )
 
