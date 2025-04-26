@@ -9,4 +9,4 @@ class GetExpenseParams:
     start_date: Optional[date]
     end_date: Optional[date]
     all_expenses: Optional[bool]
-    format: str = "excel"
+    format: str

@@ -19,7 +19,7 @@ class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=True)
-    chat_id = Column(Integer, unique=True, nullable=False, index=True)
+    chat_id = Column(String, unique=True, nullable=False, index=True)
     created_at = Column(DateTime, nullable=False, default=func.now())
 
     # Relationships
@@ -30,9 +30,9 @@ class Expense(Base):
     __tablename__ = "expenses"
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    name = Column(String(50), nullable=False)
+    title = Column(String(50), nullable=True)
     date = Column(Date, nullable=False)
-    uah_amount = Column(Numeric(10, 2), nullable=False)
+    amount = Column(Numeric(10, 2), nullable=False)
     usd_amount = Column(Numeric(10, 2), nullable=False)
     created_at = Column(DateTime, nullable=False, default=func.now())
     updated_at = Column(

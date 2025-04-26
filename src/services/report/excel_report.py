@@ -55,13 +55,13 @@ class ExcelReport(ReportBase):
         Writes the list of expenses into the worksheet.
         """
         for exp in expenses:
-            ws.append([exp.id, exp.name, exp.date, exp.uah_amount, exp.usd_amount])
+            ws.append([exp.id, exp.title, exp.date, exp.amount, exp.usd_amount])
 
     def _write_totals(self, ws, expenses: List[Expense]):
         """
         Appends total sums in UAH and USD at the end of the worksheet.
         """
-        total_sum_uah = sum(exp.uah_amount for exp in expenses)
+        total_sum_uah = sum(exp.amount for exp in expenses)
         total_sum_usd = sum(exp.usd_amount for exp in expenses)
 
         ws.append([])
