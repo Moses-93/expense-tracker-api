@@ -19,7 +19,7 @@ class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True, nullable=True)
-    chat_id = Column(Integer, unique=True, nullable=False, index=True)
+    chat_id = Column(String, unique=True, nullable=False, index=True)
     created_at = Column(DateTime, nullable=False, default=func.now())
 
     # Relationships
