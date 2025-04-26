@@ -1,8 +1,8 @@
-"""initial_migration
+"""initial migration
 
-Revision ID: 5f44f35280f2
+Revision ID: 2139817779c2
 Revises:
-Create Date: 2025-04-12 17:43:50.455137
+Create Date: 2025-04-26 16:47:31.054680
 
 """
 
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = "5f44f35280f2"
+revision: str = "2139817779c2"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -26,7 +26,7 @@ def upgrade() -> None:
         "users",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("name", sa.String(length=50), nullable=True),
-        sa.Column("chat_id", sa.Integer(), nullable=False),
+        sa.Column("chat_id", sa.String(), nullable=False),
         sa.Column("created_at", sa.DateTime(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("name"),
@@ -36,9 +36,9 @@ def upgrade() -> None:
         "expenses",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("user_id", sa.Integer(), nullable=False),
-        sa.Column("name", sa.String(length=50), nullable=False),
+        sa.Column("title", sa.String(length=50), nullable=True),
         sa.Column("date", sa.Date(), nullable=False),
-        sa.Column("uah_amount", sa.Numeric(precision=10, scale=2), nullable=False),
+        sa.Column("amount", sa.Numeric(precision=10, scale=2), nullable=False),
         sa.Column("usd_amount", sa.Numeric(precision=10, scale=2), nullable=False),
         sa.Column("created_at", sa.DateTime(), nullable=False),
         sa.Column("updated_at", sa.DateTime(), nullable=False),
