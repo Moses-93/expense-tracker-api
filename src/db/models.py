@@ -32,7 +32,7 @@ class Expense(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     title = Column(String(50), nullable=True)
     date = Column(Date, nullable=False)
-    uah_amount = Column(Numeric(10, 2), nullable=False)
+    amount = Column(Numeric(10, 2), nullable=False)
     usd_amount = Column(Numeric(10, 2), nullable=False)
     created_at = Column(DateTime, nullable=False, default=func.now())
     updated_at = Column(

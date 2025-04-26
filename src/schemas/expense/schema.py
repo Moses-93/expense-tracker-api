@@ -21,7 +21,7 @@ class ExpenseUpdate(ExpenseBase):
 class ExpenseResponse(ExpenseBase):
     id: int = Field(..., description="ID of the expense")
     date: Date = Field(..., description="Date of the expense")
-    uah_amount: float = Field(..., description="Amount of the expense")
+    amount: float = Field(..., description="Amount of the expense")
     usd_amount: float = Field(..., description="Amount of the expense in USD")
 
     class Config:
