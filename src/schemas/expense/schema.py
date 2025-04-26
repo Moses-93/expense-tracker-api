@@ -4,7 +4,7 @@ from datetime import date as Date
 
 
 class ExpenseBase(BaseModel):
-    name: str = Field(..., description="Name of the expense")
+    title: str = Field(..., description="Name of the expense")
 
 
 class ExpenseCreate(ExpenseBase):
@@ -13,7 +13,7 @@ class ExpenseCreate(ExpenseBase):
 
 
 class ExpenseUpdate(ExpenseBase):
-    name: Optional[str] = Field(None, description="Name of the expense")
+    title: Optional[str] = Field(None, description="Name of the expense")
     uah_amount: Optional[float] = Field(None, description="Amount of the expense")
     date: Optional[Date] = Field(None, description="Date of the expense")
 

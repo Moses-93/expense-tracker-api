@@ -23,7 +23,7 @@ class ExpenseService:
         """
         usd_amount = self.exchange_service.convert_uah_to_usd(expense.uah_amount)
         return self.expenses_repository.create_expense(
-            session, user_id, expense.name, expense.uah_amount, usd_amount, expense.date
+            session, user_id, expense.title, expense.uah_amount, usd_amount, expense.date
         )
 
     def get_expense_by_id(self, session: Session, expense_id: int):
