@@ -30,7 +30,7 @@ class Expense(Base):
     __tablename__ = "expenses"
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    name = Column(String(50), nullable=False)
+    title = Column(String(50), nullable=True)
     date = Column(Date, nullable=False)
     uah_amount = Column(Numeric(10, 2), nullable=False)
     usd_amount = Column(Numeric(10, 2), nullable=False)
