@@ -71,7 +71,7 @@ class ExpenseController:
                 return JSONResponse(
                     content=[
                         schema.ExpenseResponse.model_validate(e).model_dump(
-                            mode="json", include={"id", "title", "date", "uah_amount"}
+                            mode="json", include={"id", "title", "date", "amount"}
                         )
                         for e in expenses
                     ]

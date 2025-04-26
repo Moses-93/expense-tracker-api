@@ -36,7 +36,7 @@ class ExpenseRepository:
         session: Session,
         user_id: int,
         title: str,
-        uah_amount: float,
+        amount: float,
         usd_amount: float,
         date: date,
     ) -> Expense:
@@ -46,7 +46,7 @@ class ExpenseRepository:
         expense = Expense(
             user_id=user_id,
             title=title,
-            uah_amount=uah_amount,
+            amount=amount,
             usd_amount=usd_amount,
             date=date,
         )
